@@ -14,13 +14,20 @@
             android:layout_height="match_parent"
             android:layout_below="@id/category_edit"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="0dp"/>
+            android:layout_marginTop="0dp" android:layout_marginBottom="0dp"/>
 
     <EditText
             android:id="@+id/category_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="カテゴリー" />
+            android:hint="カテゴリー"/>
+
+    <Button
+            android:id="@+id/refine_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="絞り込み" android:layout_marginRight="0dp"/>
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
