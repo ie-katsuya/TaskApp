@@ -57,7 +57,7 @@
             android:layout_alignParentLeft="true"
             android:text="キャンセル" />
 
-    <EditText
+    <spinner
             android:id="@+id/category_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -14,11 +14,16 @@ import android.util.Log
 import android.view.View
 import kotlinx.android.synthetic.main.content_input.*
 import kotlinx.android.synthetic.main.content_input.view.*
+import android.R
+import android.widget.AdapterView
+import android.widget.Spinner
+import android.widget.ArrayAdapter
 
 const val EXTRA_TASK = "com.example.taskapp.TASK"
 
-class MainActivity : AppCompatActivity(), View.OnClickListener  {
+class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, View.OnClickListener {
     private lateinit var mRealm: Realm
+
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
             reloadListView()
@@ -27,16 +32,41 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
 
     private lateinit var mTaskAdapter: TaskAdapter
 
+    // 選択肢
+    val spinnerItems = arrayOf("")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fab.setOnClickListener { view ->
-            val intent = Intent(this@MainActivity, InputActivity::class.java)
-            startActivity(intent)
-        }
+        // ArrayAdapter
+        val adapter = ArrayAdapter(applicationContext,
+            R.layout.simple_spinner_item, spinnerItems)
 
-        refine_button.setOnClickListener(this)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        // spinner に adapter をセット
+        // Kotlin Android Extensions
+        category_spinner.adapter = adapter
+
+        // リスナーを登録
+        category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            //　アイテムが選択された時
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?, position: Int, id: Long
+            ) {
+                val spinnerParent = parent as Spinner
+                val item = spinnerParent.selectedItem as String
+                //textView.text = item
+                reloadListView()
+            }
+
+            //　アイテムが選択されなかった
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                //
+            }
+        }
 
         // Realmの設定
         mRealm = Realm.getDefaultInstance()
@@ -94,19 +124,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
             true
         }
 
-        reloadListView()
+
+        category_button.setOnClickListener(this)
     }
 
 
 
     private fun reloadListView() {
 
-        if (category_edit.text.toString().isEmpty() != true) {
-
             sort()
 
             val taskRefineResults =
-                mRealm.where(Task::class.java).equalTo("category", category_edit.text.toString()).findAll()
+                mRealm.where(Task::class.java).equalTo("category", spinnerItems.toString()).findAll()
 
             // 上記の結果を、TaskList としてセットする
             mTaskAdapter.taskList = mRealm.copyFromRealm(taskRefineResults)
@@ -116,10 +145,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
 
             // 表示を更新するために、アダプターにデータが変更されたことを知らせる
             mTaskAdapter.notifyDataSetChanged()
-
-        }else{
-            sort()
-        }
 
     }
 
@@ -138,8 +163,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener  {
         mTaskAdapter.notifyDataSetChanged()
     }
 
+
     override fun onClick(v: View) {
-        reloadListView()
+        val intent = Intent(this, Category_id::class.java)
+        startActivity(intent)
     }
 
     override fun onResume() {

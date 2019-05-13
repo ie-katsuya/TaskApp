@@ -9,7 +9,7 @@ import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TaskAdapter(context: Context): BaseAdapter() {
+class classAdapter (context: Context): BaseAdapter() {
     private val mLayoutInflater: LayoutInflater
     var taskList = mutableListOf<Task>()
 
@@ -30,12 +30,12 @@ class TaskAdapter(context: Context): BaseAdapter() {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View = convertView ?: mLayoutInflater.inflate(android.R.layout.simple_list_item_2, null)
+        val view: View = convertView ?: mLayoutInflater.inflate(android.R.layout.simple_list_item_1, null)
 
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
         val textView2 = view.findViewById<TextView>(android.R.id.text2)
 
-        textView1.text = "タイトル： " + taskList[position].title
+        //textView1.text = "カテゴリー： " + taskList[position].category
 
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE)
         val date = taskList[position].date
@@ -43,4 +43,5 @@ class TaskAdapter(context: Context): BaseAdapter() {
 
         return view
     }
+}
 }
