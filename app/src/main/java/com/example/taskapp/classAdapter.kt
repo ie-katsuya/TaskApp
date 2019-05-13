@@ -44,4 +44,3 @@ class classAdapter (context: Context): BaseAdapter() {
         return view
     }
 }
-}

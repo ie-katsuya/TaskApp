@@ -14,7 +14,6 @@ import android.util.Log
 import android.view.View
 import kotlinx.android.synthetic.main.content_input.*
 import kotlinx.android.synthetic.main.content_input.view.*
-import android.R
 import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.ArrayAdapter
