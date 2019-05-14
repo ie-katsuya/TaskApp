@@ -33,10 +33,6 @@ class CategoryAdapter(context: Context): BaseAdapter()  {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
 
-        // EXTRA_TASK から Task の id を取得して、 id から Task のインスタンスを取得する
-        val intent = intent
-        val list = intent.getIntExtra(EXTRA_CATEGORY, -1)
-
         val view: View = convertView ?: mLayoutInflater.inflate(android.R.layout.simple_list_item_1, null)
 
         val textView1 = view.findViewById<TextView>(android.R.id.text1)

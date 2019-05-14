@@ -34,7 +34,7 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     private var CategoryId: Long = 0
 
     // 選択肢
-    val spinnerItems: String = ""
+    private val spinnerItems = arrayOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,19 +47,19 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         // ListViewの設定
         mCategoryAdapter = CategoryAdapter(this@MainActivity)
 
-        /*
+
         // ArrayAdapter
-        val mCategoryAdapter = ArrayAdapter(applicationContext,
+        val adapter = ArrayAdapter(applicationContext,
             android.R.layout.simple_spinner_item, spinnerItems)
-        */
-        mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         // spinner に adapter をセット
         // Kotlin Android Extensions
-        //category_spinner.adapter = adapter
+        category_spinner.adapter = adapter
 
         // リスナーを登録
-        mCategoryAdapter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             //　アイテムが選択された時
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -142,7 +142,7 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
         if(CategoryId != null) {
             val taskRefineResults =
-                mRealm.where(Task::class.java).equalTo("category", CategoryId.toString()).findAll()
+                mRealm.where(Task::class.java).equalTo("category", mCategoryAdapter.toString()).findAll()
 
             // 上記の結果を、TaskList としてセットする
             mTaskAdapter.taskList = mRealm.copyFromRealm(taskRefineResults)
@@ -173,7 +173,6 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
     override fun onClick(v: View) {
         val intent = Intent(this, Category_id::class.java)
-        intent.putExtra(EXTRA_TASK, mCategoryAdapter)
         startActivity(intent)
     }
 

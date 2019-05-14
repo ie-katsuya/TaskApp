@@ -5,7 +5,7 @@ import java.util.Date
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
-class Category {
+open class Category : RealmObject(), Serializable {
     var category: String = ""   //カテゴリー
 
     // id をプライマリーキーとして設定
