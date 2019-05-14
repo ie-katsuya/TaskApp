@@ -12,6 +12,7 @@ import java.util.*
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
+
 class InputActivity : AppCompatActivity() {
 
     private var mYear = 0
