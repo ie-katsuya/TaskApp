@@ -12,17 +12,29 @@ import java.util.*
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
+import io.realm.RealmChangeListener
 import kotlinx.android.synthetic.main.activity_category_id.*
 
-class InputCategory : AppCompatActivity(), View.OnClickListener {
+abstract class InputCategory : AppCompatActivity(), View.OnClickListener {
 
     private var category:String = ""
-    private var mTask: Task? = null
+    private var mCategory: Category? = null
 
+    private lateinit var mRealm: Realm
+
+    /*
+    private val mRealmListener = object : RealmChangeListener<Realm> {
+        override fun onChange(element: Realm) {
+        }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_input)
+        setContentView(R.layout.activity_category_id)
+
+        // Realmの設定
+        mRealm = Realm.getDefaultInstance()
+        //mRealm.addChangeListener(mRealmListener)
 
         // ActionBarを設定する
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
@@ -37,40 +49,12 @@ class InputCategory : AppCompatActivity(), View.OnClickListener {
 
         // EXTRA_TASK から Task の id を取得して、 id から Task のインスタンスを取得する
         val intent = intent
-        val taskId = intent.getIntExtra(EXTRA_TASK, -1)
+        val category_text = intent.getStringExtra(EXTRA_CATEGORY)
         val realm = Realm.getDefaultInstance()
-        mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
+        mCategory = realm.where(Category::class.java).equalTo("category", category_text).findFirst()
         realm.close()
 
-        if (mTask == null) {
-            // 新規作成の場合
-            val calendar = Calendar.getInstance()
-            mYear = calendar.get(Calendar.YEAR)
-            mMonth = calendar.get(Calendar.MONTH)
-            mDay = calendar.get(Calendar.DAY_OF_MONTH)
-            mHour = calendar.get(Calendar.HOUR_OF_DAY)
-            mMinute = calendar.get(Calendar.MINUTE)
-        } else {
-            // 更新の場合
-            title_edit_text.setText(mTask!!.title)
-            content_edit_text.setText(mTask!!.contents)
-            //category_edit_text.setText(mTask!!.category)
-
-            val calendar = Calendar.getInstance()
-            calendar.time = mTask!!.date
-            mYear = calendar.get(Calendar.YEAR)
-            mMonth = calendar.get(Calendar.MONTH)
-            mDay = calendar.get(Calendar.DAY_OF_MONTH)
-            mHour = calendar.get(Calendar.HOUR_OF_DAY)
-            mMinute = calendar.get(Calendar.MINUTE)
-
-            val dateString =
-                mYear.toString() + "/" + String.format("%02d", mMonth + 1) + "/" + String.format("%02d", mDay)
-            val timeString = String.format("%02d", mHour) + ":" + String.format("%02d", mMinute)
-
-            date_button.text = dateString
-            times_button.text = timeString
-        }
+        addTask()
     }
 
     private fun addTask() {
@@ -78,47 +62,26 @@ class InputCategory : AppCompatActivity(), View.OnClickListener {
 
         realm.beginTransaction()
 
-        if (mTask == null) {
+        if (mCategory == null) {
             // 新規作成の場合
-            mTask = Task()
+            mCategory = Category()
 
-            val taskRealmResults = realm.where(Task::class.java).findAll()
+            val CategoryRealmResults = realm.where(Category::class.java).findAll()
 
             val identifier: Int =
-                if (taskRealmResults.max("id") != null) {
-                    taskRealmResults.max("id")!!.toInt() + 1
+                if (CategoryRealmResults.max("id") != null) {
+                    CategoryRealmResults.max("id")!!.toInt() + 1
                 } else {
                     0
                 }
-            mTask!!.id = identifier
+            mCategory!!.id = identifier
         }
 
-        val title = title_edit_text.text.toString()
-        val content = content_edit_text.text.toString()
-        //val category = category_edit_text.text.toString()
+        val cate = category_edit_text.toString()
 
-        mTask!!.title = title
-        mTask!!.contents = content
-        //mTask!!.category = category
-        val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
-        val date = calendar.time
-        mTask!!.date = date
+        mCategory!!.category = cate
 
-        realm.copyToRealmOrUpdate(mTask!!)
+        realm.copyToRealmOrUpdate(mCategory!!)
         realm.commitTransaction()
-
-        //realm.close()
-
-        val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
-        resultIntent.putExtra(EXTRA_TASK, mTask!!.id)
-        val resultPendingIntent = PendingIntent.getBroadcast(
-            this,
-            mTask!!.id,
-            resultIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, resultPendingIntent)
     }
 }

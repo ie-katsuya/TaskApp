@@ -22,19 +22,16 @@ const val EXTRA_TASK = "com.example.taskapp.TASK"
 
 abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, View.OnClickListener {
     private lateinit var mRealm: Realm
+    private lateinit var item: String
 
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
-            reloadListView()
+            reloadListView(item)
         }
     }
 
     private lateinit var mTaskAdapter: TaskAdapter
     private lateinit var mCategoryAdapter: CategoryAdapter
-    private var CategoryId: Long = 0
-
-    // 選択肢
-    private val spinnerItems = arrayOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +47,7 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
         // ArrayAdapter
         val adapter = ArrayAdapter(applicationContext,
-            android.R.layout.simple_spinner_item, spinnerItems)
+            android.R.layout.simple_spinner_item, arrayOf(""))
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
@@ -66,15 +63,14 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                 view: View?, position: Int, id: Long
             ) {
                 val spinnerParent = parent as Spinner
-                val item = spinnerParent.selectedItem as String
-                CategoryId = id
+                item = spinnerParent.selectedItem as String
                 //textView.text = item
-                reloadListView()
+                reloadListView(item)
             }
 
             //　アイテムが選択されなかった
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
+                sort()
             }
         }
 
@@ -119,7 +115,7 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
                 val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
                 alarmManager.cancel(resultPendingIntent)
 
-                reloadListView()
+                reloadListView(item)
             }
 
             builder.setNegativeButton("CANCEL", null)
@@ -136,13 +132,13 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
 
 
-    private fun reloadListView() {
+    private fun reloadListView(item: String) {
 
             sort()
 
-        if(CategoryId != null) {
+        if(item != null) {
             val taskRefineResults =
-                mRealm.where(Task::class.java).equalTo("category", mCategoryAdapter.toString()).findAll()
+                mRealm.where(Task::class.java).equalTo("category", item).findAll()
 
             // 上記の結果を、TaskList としてセットする
             mTaskAdapter.taskList = mRealm.copyFromRealm(taskRefineResults)
@@ -179,7 +175,7 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     override fun onResume() {
         super.onResume()
 
-        reloadListView()
+        reloadListView(item)
     }
 
     override fun onDestroy() {
