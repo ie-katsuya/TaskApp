@@ -20,7 +20,7 @@ import android.widget.ArrayAdapter
 
 const val EXTRA_TASK = "com.example.taskapp.TASK"
 
-abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, View.OnClickListener {
+class MainActivity : AppCompatActivity(),View.OnClickListener {
     private lateinit var mRealm: Realm
     private lateinit var item: String
 
@@ -46,8 +46,10 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
 
         // ArrayAdapter
-        val adapter = ArrayAdapter(applicationContext,
-            android.R.layout.simple_spinner_item, arrayOf(""))
+        val adapter = ArrayAdapter(
+            applicationContext,
+            android.R.layout.simple_spinner_item, arrayOf("")
+        )
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
@@ -55,24 +57,26 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         // Kotlin Android Extensions
         category_spinner.adapter = adapter
 
-        // リスナーを登録
-        category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            //　アイテムが選択された時
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?, position: Int, id: Long
-            ) {
-                val spinnerParent = parent as Spinner
-                item = spinnerParent.selectedItem as String
-                //textView.text = item
-                reloadListView(item)
-            }
+        category_spinner.setOnItemSelectedListener(
+            // リスナーを登録
+            object : AdapterView.OnItemSelectedListener {
+                //　アイテムが選択された時
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?, position: Int, id: Long
+                ) {
+                    val spinnerParent = parent as Spinner
+                    item = spinnerParent.selectedItem as String
+                    //textView.text = item
+                    reloadListView(item)
+                }
 
-            //　アイテムが選択されなかった
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                sort()
-            }
-        }
+                //　アイテムが選択されなかった
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    sort()
+                }
+            })
+
 
         // ListViewの設定
         mTaskAdapter = TaskAdapter(this@MainActivity)
@@ -131,12 +135,11 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
     }
 
 
-
     private fun reloadListView(item: String) {
 
-            sort()
+        sort()
 
-        if(item != null) {
+        if (item != null) {
             val taskRefineResults =
                 mRealm.where(Task::class.java).equalTo("category", item).findAll()
 
@@ -151,7 +154,7 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
         }
     }
 
-    private fun sort(){
+    private fun sort() {
 
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
         val tasksortResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
@@ -183,6 +186,5 @@ abstract class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedLis
 
         mRealm.close()
     }
-
 
 }
