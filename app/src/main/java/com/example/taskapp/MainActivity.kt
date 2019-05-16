@@ -22,7 +22,11 @@ const val EXTRA_TASK = "com.example.taskapp.TASK"
 
 class MainActivity : AppCompatActivity(),View.OnClickListener {
     private lateinit var mRealm: Realm
-    private var mCategoryId: String = ""
+    private var mCategoryId: Int = 0
+
+    private var spinnerItems: MutableList<String> = mutableListOf()
+
+    private var spinnerAdapter = CustumAdapter()
 
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
@@ -38,7 +42,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         setContentView(R.layout.activity_main)
 
         fab.setOnClickListener { view ->
-            val intent = Intent(this@MainActivity, InputActivity::class.java)
+            val intent = Intent(this, InputActivity::class.java)
             startActivity(intent)
         }
 
@@ -49,17 +53,10 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         // ListViewの設定
         mCategoryAdapter = CategoryAdapter(this@MainActivity)
 
-        // ArrayAdapter
-        val adapter = ArrayAdapter(
-            applicationContext,
-            android.R.layout.simple_spinner_item, arrayOf("")
-        )
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
         // spinner に adapter をセット
         // Kotlin Android Extensions
-        category_spinner.adapter = adapter
+        category_spinner.adapter = spinnerAdapter
+        spinnerAdapter.dataList = spinnerItems
 
         category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             //　アイテムが選択された時
@@ -68,7 +65,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                 view: View?, position: Int, id: Long
             ) {
                 val spinnerParent = parent as Spinner
-                mCategoryId = spinnerParent.selectedItem as String
+                mCategoryId = spinnerParent.selectedItem as Int
                 //textView.text = item
                 reloadListView(mCategoryId)
             }
@@ -137,14 +134,14 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
     }
 
 
-    private fun reloadListView(item: String) {
+    private fun reloadListView(item: Int) {
 
         sort()
 
         if (item != null) {
 
             val taskRefineResults =
-                mRealm.where(Task::class.java).equalTo("category", item).findAll()
+                mRealm.where(Task::class.java).equalTo("categoryId", item).findAll()
 
             // 上記の結果を、TaskList としてセットする  mutableListOf()
             mTaskAdapter.taskList = mRealm.copyFromRealm(taskRefineResults)
@@ -155,6 +152,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
             // 表示を更新するために、アダプターにデータが変更されたことを知らせる
             mTaskAdapter.notifyDataSetChanged()
         }
+
     }
 
     private fun sort() {
@@ -174,13 +172,16 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
 
     override fun onClick(v: View) {
-
-        val intent = Intent(this, Category_id::class.java)
+        val intent = Intent(this, InputCategory::class.java)
         startActivity(intent)
+
     }
 
     override fun onResume() {
         super.onResume()
+
+        spinnerItems.clear()
+
 
         reloadListView(mCategoryId)
     }
@@ -188,7 +189,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
     override fun onDestroy() {
         super.onDestroy()
 
-        mRealm.close()
+        //mRealm.close()
     }
 
 }

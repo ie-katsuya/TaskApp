@@ -16,6 +16,8 @@ const val EXTRA_CATEGORY = "com.example.taskapp.TASK"
 
 class Category_id : AppCompatActivity(), View.OnClickListener{
     private lateinit var mRealm: Realm
+    private var mCategory: Category? = null
+    private lateinit var mCategoryAdapter: CategoryAdapter
 
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
@@ -35,11 +37,37 @@ class Category_id : AppCompatActivity(), View.OnClickListener{
     }
 
     override fun onClick(v: View) {
+
         // エディットテキストのテキストを取得
         if (category_edit.text != null) {
-            val intent = Intent(this, InputCategory::class.java)
+            val intent = Intent(this, CategoryAdapter::class.java)
             intent.putExtra(EXTRA_CATEGORY, category_edit.text)
             startActivity(intent)
         }
+
+        val realm = Realm.getDefaultInstance()
+
+        realm.beginTransaction()
+
+        if (mCategory == null) {
+            // 新規作成の場合
+            mCategory = Category()
+
+            val CategoryRealmResults = realm.where(Category::class.java).findAll()
+
+            val identifier: Int =
+                if (CategoryRealmResults.max("id") != null) {
+                    CategoryRealmResults.max("id")!!.toInt() + 1
+                } else {
+                    0
+                }
+            mCategory!!.id = identifier
+        }
+
+        realm.copyToRealmOrUpdate(mCategory!!)
+        realm.commitTransaction()
+
+        realm.close()
+
     }
 }

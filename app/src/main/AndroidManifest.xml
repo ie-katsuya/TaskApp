@@ -34,6 +34,8 @@
                     android:value="com.example.taskapp.MainActivity"/>
         </activity>
 
+        <activity android:name=".InputCategory"></activity>>
+
         <receiver android:name=".TaskAlarmReceiver"/>
     </application>
 

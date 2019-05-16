@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.app.PendingIntent
 import android.content.Intent
+import io.realm.Realm
 
 class CategoryAdapter(context: Context): BaseAdapter()  {
     private val mLayoutInflater: LayoutInflater
@@ -37,8 +38,7 @@ class CategoryAdapter(context: Context): BaseAdapter()  {
 
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
 
-        textView1.text = "カテゴリー： " + spinnerlist[position].category
-
+        textView1.text = "カテゴリー： " + spinnerlist[position].name
 
         return view
     }

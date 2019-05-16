@@ -14,46 +14,29 @@ import android.app.PendingIntent
 import android.content.Intent
 import io.realm.RealmChangeListener
 import kotlinx.android.synthetic.main.activity_category_id.*
+import kotlinx.android.synthetic.main.activity_main.*
 
-abstract class InputCategory : AppCompatActivity(), View.OnClickListener {
+class InputCategory : AppCompatActivity(), View.OnClickListener {
 
     private var mCategory: Category? = null
-
-    private lateinit var mRealm: Realm
-
-    /*
-    private val mRealmListener = object : RealmChangeListener<Realm> {
-        override fun onChange(element: Realm) {
-        }
-    }*/
+    private var categoryname: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_category_id)
 
-        // Realmの設定
-        mRealm = Realm.getDefaultInstance()
-        //mRealm.addChangeListener(mRealmListener)
-
-        // ActionBarを設定する
-        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
-        if (supportActionBar != null) {
-            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        }
-
         // UI部品の設定
         refine_button.setOnClickListener(this)
 
-
-        // EXTRA_CATEGORY から CATEGORY の id を取得して、 id から CATEGORY のインスタンスを取得する
-        val intent = intent
-        val category_text = intent.getStringExtra(EXTRA_CATEGORY)
-        val realm = Realm.getDefaultInstance()
-        mCategory = realm.where(Category::class.java).equalTo("category", category_text).findFirst()
-        realm.close()
-
         addTask()
+    }
+
+    override fun onClick(v: View) {
+
+        if (category_edit.text != null) {
+            categoryname = category_edit.toString()
+            addTask()
+        }
     }
 
     private fun addTask() {
@@ -76,13 +59,12 @@ abstract class InputCategory : AppCompatActivity(), View.OnClickListener {
             mCategory!!.id = identifier
         }
 
-        val cate = spinner_category.toString()
-
-        mCategory!!.category = cate
+        mCategory!!.name = categoryname
 
         realm.copyToRealmOrUpdate(mCategory!!)
         realm.commitTransaction()
 
         realm.close()
     }
+
 }
