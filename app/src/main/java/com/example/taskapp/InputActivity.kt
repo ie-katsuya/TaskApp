@@ -12,8 +12,12 @@ import java.util.*
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import kotlinx.android.synthetic.main.activity_main.*
 
-class InputActivity : AppCompatActivity() {
+class InputActivity : AppCompatActivity(){
 
     private var mYear = 0
     private var mMonth = 0
@@ -21,6 +25,8 @@ class InputActivity : AppCompatActivity() {
     private var mHour = 0
     private var mMinute = 0
     private var mTask: Task? = null
+
+    private var item: String = ""
 
     private val mOnDateClickListener = View.OnClickListener {
         val datePickerDialog = DatePickerDialog(this,
@@ -111,6 +117,7 @@ class InputActivity : AppCompatActivity() {
             date_button.text = dateString
             times_button.text = timeString
         }
+
     }
 
     private fun addTask() {
@@ -119,6 +126,7 @@ class InputActivity : AppCompatActivity() {
         realm.beginTransaction()
 
         if (mTask == null) {
+
             // 新規作成の場合
             mTask = Task()
 

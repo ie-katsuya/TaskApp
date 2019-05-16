@@ -22,11 +22,11 @@ const val EXTRA_TASK = "com.example.taskapp.TASK"
 
 class MainActivity : AppCompatActivity(),View.OnClickListener {
     private lateinit var mRealm: Realm
-    private lateinit var item: String
+    private var mCategoryId: String = ""
 
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
-            reloadListView(item)
+            reloadListView(mCategoryId)
         }
     }
 
@@ -37,13 +37,17 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        fab.setOnClickListener { view ->
+            val intent = Intent(this@MainActivity, InputActivity::class.java)
+            startActivity(intent)
+        }
+
         // Realmの設定
         mRealm = Realm.getDefaultInstance()
         mRealm.addChangeListener(mRealmListener)
 
         // ListViewの設定
         mCategoryAdapter = CategoryAdapter(this@MainActivity)
-
 
         // ArrayAdapter
         val adapter = ArrayAdapter(
@@ -57,25 +61,23 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         // Kotlin Android Extensions
         category_spinner.adapter = adapter
 
-        category_spinner.setOnItemSelectedListener(
-            // リスナーを登録
-            object : AdapterView.OnItemSelectedListener {
-                //　アイテムが選択された時
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?, position: Int, id: Long
-                ) {
-                    val spinnerParent = parent as Spinner
-                    item = spinnerParent.selectedItem as String
-                    //textView.text = item
-                    reloadListView(item)
-                }
+        category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            //　アイテムが選択された時
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?, position: Int, id: Long
+            ) {
+                val spinnerParent = parent as Spinner
+                mCategoryId = spinnerParent.selectedItem as String
+                //textView.text = item
+                reloadListView(mCategoryId)
+            }
 
-                //　アイテムが選択されなかった
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    sort()
-                }
-            })
+            //　アイテムが選択されなかった
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                sort()
+            }
+        }
 
 
         // ListViewの設定
@@ -119,7 +121,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                 val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
                 alarmManager.cancel(resultPendingIntent)
 
-                reloadListView(item)
+                reloadListView(mCategoryId)
             }
 
             builder.setNegativeButton("CANCEL", null)
@@ -140,10 +142,11 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         sort()
 
         if (item != null) {
+
             val taskRefineResults =
                 mRealm.where(Task::class.java).equalTo("category", item).findAll()
 
-            // 上記の結果を、TaskList としてセットする
+            // 上記の結果を、TaskList としてセットする  mutableListOf()
             mTaskAdapter.taskList = mRealm.copyFromRealm(taskRefineResults)
 
             // TaskのListView用のアダプタに渡す
@@ -171,6 +174,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
 
     override fun onClick(v: View) {
+
         val intent = Intent(this, Category_id::class.java)
         startActivity(intent)
     }
@@ -178,7 +182,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
     override fun onResume() {
         super.onResume()
 
-        reloadListView(item)
+        reloadListView(mCategoryId)
     }
 
     override fun onDestroy() {

@@ -17,7 +17,6 @@ import kotlinx.android.synthetic.main.activity_category_id.*
 
 abstract class InputCategory : AppCompatActivity(), View.OnClickListener {
 
-    private var category:String = ""
     private var mCategory: Category? = null
 
     private lateinit var mRealm: Realm
@@ -47,7 +46,7 @@ abstract class InputCategory : AppCompatActivity(), View.OnClickListener {
         refine_button.setOnClickListener(this)
 
 
-        // EXTRA_TASK から Task の id を取得して、 id から Task のインスタンスを取得する
+        // EXTRA_CATEGORY から CATEGORY の id を取得して、 id から CATEGORY のインスタンスを取得する
         val intent = intent
         val category_text = intent.getStringExtra(EXTRA_CATEGORY)
         val realm = Realm.getDefaultInstance()
@@ -77,11 +76,13 @@ abstract class InputCategory : AppCompatActivity(), View.OnClickListener {
             mCategory!!.id = identifier
         }
 
-        val cate = category_edit_text.toString()
+        val cate = spinner_category.toString()
 
         mCategory!!.category = cate
 
         realm.copyToRealmOrUpdate(mCategory!!)
         realm.commitTransaction()
+
+        realm.close()
     }
 }

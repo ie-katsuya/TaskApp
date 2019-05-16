@@ -46,19 +46,19 @@
             android:id="@+id/done_button"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/category_edit_text"
+            android:layout_below="@id/spinner_category"
             android:layout_alignParentRight="true"
             android:text="保存" />
     <Button
             android:id="@+id/cancell_button"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/category_edit_text"
+            android:layout_below="@id/spinner_category"
             android:layout_alignParentLeft="true"
             android:text="キャンセル" />
 
     <spinner
-            android:id="@+id/category_edit_text"
+            android:id="@+id/spinner_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/times_button"
