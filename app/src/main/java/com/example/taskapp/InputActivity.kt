@@ -98,7 +98,7 @@ class InputActivity : AppCompatActivity(){
                 view: View?, position: Int, id: Long
             ) {
                 var spinnerParent = parent as Spinner
-                item = spinnerParent.selectedItem as Category
+                selectcategory = spinnerParent.selectedItem as Category
             }
 
             //　アイテムが選択されなかった
@@ -127,6 +127,7 @@ class InputActivity : AppCompatActivity(){
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
             selectcategory = mTask!!.category
+            spinner_category.setSelection(selectcategory?.id?: 0)
 
             val calendar = Calendar.getInstance()
             calendar.time = mTask!!.date
@@ -211,7 +212,7 @@ class InputActivity : AppCompatActivity(){
 
         //spinnerにカテゴリーをセット
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
-        val categoryRefineResults = mRealm.where(Category::class.java).findAll()
+        val categoryRefineResults = mRealm.where(Category::class.java).findAll().sort("id")
 
         // 上記の結果を、spinnerList としてセットする
         mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)

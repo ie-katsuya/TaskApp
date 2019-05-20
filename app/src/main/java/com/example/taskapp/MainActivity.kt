@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
     private lateinit var mTaskAdapter: TaskAdapter
     private lateinit var mCategoryAdapter: CategoryAdapter
+    private var mCategory: Category? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,16 +60,37 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         category_spinner.adapter = spinnerAdapter
         spinnerAdapter.dataList = spinnerItems
 
+        if(mCategory?.id ?: 0 == 0){
+            val realm = Realm.getDefaultInstance()
+
+            realm.beginTransaction()
+
+            if (mCategory == null) {
+                // 新規作成の場合
+                mCategory = Category()
+
+                val CategoryRealmResults = realm.where(Category::class.java).findAll()
+
+                val identifier: Int =
+                    if (CategoryRealmResults.max("id") != null) {
+                        CategoryRealmResults.max("id")!!.toInt() + 1
+                    } else {
+                        0
+                    }
+                mCategory!!.id = identifier
+            }
+            mCategory!!.name = "ALL"
+        }
         //spinnerにカテゴリーをセット
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
         val categoryRefineResults = mRealm.where(Category::class.java).findAll()
 
-        // 上記の結果を、TaskList としてセットする
-        mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
+            // 上記の結果を、TaskList としてセットする
+            mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
 
-        category_spinner.adapter = mCategoryAdapter
+            category_spinner.adapter = mCategoryAdapter
 
-        mCategoryAdapter.notifyDataSetChanged()
+            mCategoryAdapter.notifyDataSetChanged()
 
         category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             //　アイテムが選択された時
@@ -161,6 +183,25 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
     }
 
+    private fun reloadListView(select: Category) {
+
+        sort()
+
+        if(select != null) {
+            val taskRefineResults =
+                mRealm.where(Task::class.java).equalTo("category", select.toString()).findAll()
+
+            // 上記の結果を、TaskList としてセットする  mutableListOf()
+            mTaskAdapter.taskList = mRealm.copyFromRealm(taskRefineResults)
+
+            // TaskのListView用のアダプタに渡す
+            listView1.adapter = mTaskAdapter
+
+            // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+            mTaskAdapter.notifyDataSetChanged()
+        }
+    }
+
     private fun sort() {
 
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
@@ -175,7 +216,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         // 表示を更新するために、アダプターにデータが変更されたことを知らせる
         mTaskAdapter.notifyDataSetChanged()
     }
-
 
     override fun onClick(v: View) {
         val intent = Intent(this, InputCategory::class.java)
