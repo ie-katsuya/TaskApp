@@ -22,7 +22,6 @@ const val EXTRA_TASK = "com.example.taskapp.TASK"
 
 class MainActivity : AppCompatActivity(),View.OnClickListener {
     private lateinit var mRealm: Realm
-    private var mCategoryId: Int = 0
 
     private var spinnerItems: MutableList<String> = mutableListOf()
 
@@ -30,7 +29,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
-            reloadListView(mCategoryId)
+            reloadListView()
         }
     }
 
@@ -58,6 +57,18 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         category_spinner.adapter = spinnerAdapter
         spinnerAdapter.dataList = spinnerItems
 
+        //spinnerにカテゴリーをセット
+        // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
+        val categoryRefineResults = mRealm.where(Category::class.java).findAll()
+
+        // 上記の結果を、TaskList としてセットする
+        mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
+
+        category_spinner.adapter = mCategoryAdapter
+
+        mCategoryAdapter.notifyDataSetChanged()
+
+
         category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             //　アイテムが選択された時
             override fun onItemSelected(
@@ -65,9 +76,9 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                 view: View?, position: Int, id: Long
             ) {
                 val spinnerParent = parent as Spinner
-                mCategoryId = spinnerParent.selectedItem as Int
+                //mCategoryId = spinnerParent.selectedItem as Int
                 //textView.text = item
-                reloadListView(mCategoryId)
+                reloadListView()
             }
 
             //　アイテムが選択されなかった
@@ -118,7 +129,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                 val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
                 alarmManager.cancel(resultPendingIntent)
 
-                reloadListView(mCategoryId)
+                reloadListView()
             }
 
             builder.setNegativeButton("CANCEL", null)
@@ -134,14 +145,12 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
     }
 
 
-    private fun reloadListView(item: Int) {
+    private fun reloadListView() {
 
         sort()
 
-        if (item != null) {
-
             val taskRefineResults =
-                mRealm.where(Task::class.java).equalTo("categoryId", item).findAll()
+                mRealm.where(Task::class.java).findAll()
 
             // 上記の結果を、TaskList としてセットする  mutableListOf()
             mTaskAdapter.taskList = mRealm.copyFromRealm(taskRefineResults)
@@ -151,7 +160,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
             // 表示を更新するために、アダプターにデータが変更されたことを知らせる
             mTaskAdapter.notifyDataSetChanged()
-        }
 
     }
 
@@ -182,8 +190,18 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
         spinnerItems.clear()
 
+        //spinnerにカテゴリーをセット
+        // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
+        val categoryRefineResults = mRealm.where(Category::class.java).findAll()
 
-        reloadListView(mCategoryId)
+        // 上記の結果を、TaskList としてセットする
+        mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
+
+        category_spinner.adapter = mCategoryAdapter
+
+        mCategoryAdapter.notifyDataSetChanged()
+
+        reloadListView()
     }
 
     override fun onDestroy() {

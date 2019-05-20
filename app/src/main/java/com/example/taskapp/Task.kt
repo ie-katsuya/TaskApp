@@ -10,7 +10,9 @@ open class Task : RealmObject(), Serializable {
     var contents: String = ""   // 内容
     var date: Date = Date()     // 日時
 
-    var categoryId: Int? = null    //カテゴリーID
+    //var categoryId: Int? = null    //カテゴリーID
+
+    var category: Category? = null
 
     // id をプライマリーキーとして設定
     @PrimaryKey

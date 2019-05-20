@@ -24,14 +24,9 @@ class Category_id : AppCompatActivity(), View.OnClickListener{
         }
     }
 
-    // Map<String, String> 型の ArrayList を作成します
-    val list = ArrayList<String>()
-    var count = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_category_id)
-
 
         refine_button.setOnClickListener(this)
     }

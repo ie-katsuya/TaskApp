@@ -38,7 +38,7 @@ class CategoryAdapter(context: Context): BaseAdapter()  {
 
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
 
-        textView1.text = "カテゴリー： " + spinnerlist[position].name
+        textView1.text = spinnerlist[position].name
 
         return view
     }

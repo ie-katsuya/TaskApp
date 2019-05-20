@@ -15,6 +15,7 @@ import android.content.Intent
 import io.realm.RealmChangeListener
 import kotlinx.android.synthetic.main.activity_category_id.*
 import kotlinx.android.synthetic.main.activity_main.*
+import android.widget.Toast
 
 class InputCategory : AppCompatActivity(), View.OnClickListener {
 
@@ -27,14 +28,13 @@ class InputCategory : AppCompatActivity(), View.OnClickListener {
 
         // UI部品の設定
         refine_button.setOnClickListener(this)
-
-        addTask()
     }
 
     override fun onClick(v: View) {
 
         if (category_edit.text != null) {
-            categoryname = category_edit.toString()
+            Toast.makeText(applicationContext, "カテゴリーを追加しました", Toast.LENGTH_SHORT).show()
+            categoryname = category_edit.text.toString()
             addTask()
         }
     }
