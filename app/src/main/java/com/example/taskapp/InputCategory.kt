@@ -31,8 +31,7 @@ class InputCategory : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-
-        if (category_edit.text != null) {
+        if (category_edit.text.toString().equals("") == false) {
             Toast.makeText(applicationContext, "カテゴリーを追加しました", Toast.LENGTH_SHORT).show()
             categoryname = category_edit.text.toString()
             addTask()

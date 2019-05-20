@@ -28,6 +28,7 @@ class InputActivity : AppCompatActivity(){
     private var mTask: Task? = null
 
     private var item: Category? = null
+    var selectcategory: Category? = null
 
     private lateinit var mRealm: Realm
     private lateinit var mCategoryAdapter: CategoryAdapter
@@ -96,12 +97,13 @@ class InputActivity : AppCompatActivity(){
                 parent: AdapterView<*>?,
                 view: View?, position: Int, id: Long
             ) {
-                val spinnerParent = parent as Spinner
+                var spinnerParent = parent as Spinner
                 item = spinnerParent.selectedItem as Category
             }
 
             //　アイテムが選択されなかった
             override fun onNothingSelected(parent: AdapterView<*>?) {
+                item = null
             }
         }
 
@@ -124,7 +126,7 @@ class InputActivity : AppCompatActivity(){
             // 更新の場合
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
-
+            selectcategory = mTask!!.category
 
             val calendar = Calendar.getInstance()
             calendar.time = mTask!!.date
@@ -171,7 +173,7 @@ class InputActivity : AppCompatActivity(){
 
         mTask!!.title = title
         mTask!!.contents = content
-        mTask!!.category = item
+        mTask!!.category = selectcategory
         val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
         val date = calendar.time
         mTask!!.date = date
@@ -211,7 +213,7 @@ class InputActivity : AppCompatActivity(){
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
         val categoryRefineResults = mRealm.where(Category::class.java).findAll()
 
-        // 上記の結果を、TaskList としてセットする
+        // 上記の結果を、spinnerList としてセットする
         mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
 
         spinner_category.adapter = mCategoryAdapter

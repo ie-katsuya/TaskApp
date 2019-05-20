@@ -34,7 +34,7 @@ class Category_id : AppCompatActivity(), View.OnClickListener{
     override fun onClick(v: View) {
 
         // エディットテキストのテキストを取得
-        if (category_edit.text != null) {
+        if (category_edit.text.toString().equals("") == false) {
             val intent = Intent(this, CategoryAdapter::class.java)
             intent.putExtra(EXTRA_CATEGORY, category_edit.text)
             startActivity(intent)

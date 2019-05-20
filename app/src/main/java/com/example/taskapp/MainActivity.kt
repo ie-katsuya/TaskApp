@@ -27,6 +27,8 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
     private var spinnerAdapter = CustumAdapter()
 
+    private var item: Category? = null
+
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
             reloadListView()
@@ -68,16 +70,14 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
         mCategoryAdapter.notifyDataSetChanged()
 
-
         category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             //　アイテムが選択された時
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?, position: Int, id: Long
             ) {
-                val spinnerParent = parent as Spinner
-                //mCategoryId = spinnerParent.selectedItem as Int
-                //textView.text = item
+                var spinnerParent = parent as Spinner
+                item = spinnerParent.selectedItem as Category
                 reloadListView()
             }
 
@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                 sort()
             }
         }
-
 
         // ListViewの設定
         mTaskAdapter = TaskAdapter(this@MainActivity)
@@ -140,7 +139,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
             true
         }
 
-
         category_button.setOnClickListener(this)
     }
 
@@ -182,7 +180,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
     override fun onClick(v: View) {
         val intent = Intent(this, InputCategory::class.java)
         startActivity(intent)
-
     }
 
     override fun onResume() {
