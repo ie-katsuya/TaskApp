@@ -100,12 +100,12 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
             ) {
                 var spinnerParent = parent as Spinner
                 item = spinnerParent.selectedItem as Category
-                reloadListView()
+                reloadListView(item!!)
             }
 
             //　アイテムが選択されなかった
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                sort()
+
             }
         }
 
@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
         mCategoryAdapter.notifyDataSetChanged()
 
-        reloadListView()
+        reloadListView(item!!)
     }
 
     override fun onDestroy() {
