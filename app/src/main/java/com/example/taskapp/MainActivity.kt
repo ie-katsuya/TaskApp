@@ -55,6 +55,13 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         // ListViewの設定
         mCategoryAdapter = CategoryAdapter(this@MainActivity)
 
+        //spinnerにカテゴリーをセット
+        // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
+        val categoryRefineResults = mRealm.where(Category::class.java).findAll()
+
+        // 上記の結果を、TaskList としてセットする
+        mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
+
         // spinner に adapter をセット
         // Kotlin Android Extensions
         category_spinner.adapter = spinnerAdapter
@@ -81,12 +88,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
             }
             mCategory!!.name = "ALL"
         }
-        //spinnerにカテゴリーをセット
-        // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
-        val categoryRefineResults = mRealm.where(Category::class.java).findAll()
-
-            // 上記の結果を、TaskList としてセットする
-            mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
 
             category_spinner.adapter = mCategoryAdapter
 
@@ -100,7 +101,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
             ) {
                 var spinnerParent = parent as Spinner
                 item = spinnerParent.selectedItem as Category
-                reloadListView(item!!)
+                reloadListView()
             }
 
             //　アイテムが選択されなかった
@@ -189,7 +190,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
         if(select != null) {
             val taskRefineResults =
-                mRealm.where(Task::class.java).equalTo("category", select.toString()).findAll()
+                mRealm.where(Task::class.java).findAll()
 
             // 上記の結果を、TaskList としてセットする  mutableListOf()
             mTaskAdapter.taskList = mRealm.copyFromRealm(taskRefineResults)
@@ -238,7 +239,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
         mCategoryAdapter.notifyDataSetChanged()
 
-        reloadListView(item!!)
+        reloadListView()
     }
 
     override fun onDestroy() {
