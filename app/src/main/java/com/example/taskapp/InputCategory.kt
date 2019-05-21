@@ -64,6 +64,7 @@ class InputCategory : AppCompatActivity(), View.OnClickListener {
         realm.commitTransaction()
 
         realm.close()
+
     }
 
 }

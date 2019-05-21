@@ -29,6 +29,7 @@ class InputActivity : AppCompatActivity(){
 
     private var item: Category? = null
     var selectcategory: Category? = null
+    private var mCategoryId = 0
 
     private lateinit var mRealm: Realm
     private lateinit var mCategoryAdapter: CategoryAdapter
@@ -99,11 +100,11 @@ class InputActivity : AppCompatActivity(){
             ) {
                 var spinnerParent = parent as Spinner
                 selectcategory = spinnerParent.selectedItem as Category
+                mCategoryId = id.toInt()
             }
-
             //　アイテムが選択されなかった
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                item = null
+                mCategoryId = 0
             }
         }
 
@@ -127,7 +128,7 @@ class InputActivity : AppCompatActivity(){
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
             selectcategory = mTask!!.category
-            spinner_category.setSelection(selectcategory?.id?: 0)
+            spinner_category.setSelection(mCategoryId)
 
             val calendar = Calendar.getInstance()
             calendar.time = mTask!!.date
@@ -175,6 +176,7 @@ class InputActivity : AppCompatActivity(){
         mTask!!.title = title
         mTask!!.contents = content
         mTask!!.category = selectcategory
+        spinner_category.setSelection(mCategoryId)
         val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
         val date = calendar.time
         mTask!!.date = date
@@ -192,7 +194,6 @@ class InputActivity : AppCompatActivity(){
             resultIntent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, resultPendingIntent)
     }
@@ -220,7 +221,6 @@ class InputActivity : AppCompatActivity(){
         spinner_category.adapter = mCategoryAdapter
 
         mCategoryAdapter.notifyDataSetChanged()
-
     }
 
     private val mRealmListener = object : RealmChangeListener<Realm> {

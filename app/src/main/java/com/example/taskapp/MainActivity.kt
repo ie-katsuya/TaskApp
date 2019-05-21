@@ -23,12 +23,6 @@ const val EXTRA_TASK = "com.example.taskapp.TASK"
 class MainActivity : AppCompatActivity(),View.OnClickListener {
     private lateinit var mRealm: Realm
 
-    private var spinnerItems: MutableList<String> = mutableListOf()
-
-    private var spinnerAdapter = CustumAdapter()
-
-    private var item: Category? = null
-
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
             reloadListView()
@@ -37,7 +31,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
     private lateinit var mTaskAdapter: TaskAdapter
     private lateinit var mCategoryAdapter: CategoryAdapter
-    private var mCategory: Category? = null
+    private var mCategoryId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,36 +56,9 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         // 上記の結果を、TaskList としてセットする
         mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
 
-        // spinner に adapter をセット
-        // Kotlin Android Extensions
-        category_spinner.adapter = spinnerAdapter
-        spinnerAdapter.dataList = spinnerItems
+        category_spinner.adapter = mCategoryAdapter
 
-        if(mCategory?.id ?: 0 == 0){
-            val realm = Realm.getDefaultInstance()
-
-            realm.beginTransaction()
-
-            if (mCategory == null) {
-                // 新規作成の場合
-                mCategory = Category()
-
-                val CategoryRealmResults = realm.where(Category::class.java).findAll()
-
-                val identifier: Int =
-                    if (CategoryRealmResults.max("id") != null) {
-                        CategoryRealmResults.max("id")!!.toInt() + 1
-                    } else {
-                        0
-                    }
-                mCategory!!.id = identifier
-            }
-            mCategory!!.name = "ALL"
-        }
-
-            category_spinner.adapter = mCategoryAdapter
-
-            mCategoryAdapter.notifyDataSetChanged()
+        mCategoryAdapter.notifyDataSetChanged()
 
         category_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             //　アイテムが選択された時
@@ -100,13 +67,14 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                 view: View?, position: Int, id: Long
             ) {
                 var spinnerParent = parent as Spinner
-                item = spinnerParent.selectedItem as Category
+                //item = spinnerParent.selectedItem as Category
+                mCategoryId = id.toInt()
                 reloadListView()
             }
 
             //　アイテムが選択されなかった
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
+                //mCategoryAdapter.spinnerlist.add(0, "ALL")
             }
         }
 
@@ -170,6 +138,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
         sort()
 
+        //if (mCategoryId != 0) {
             val taskRefineResults =
                 mRealm.where(Task::class.java).findAll()
 
@@ -181,6 +150,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
             // 表示を更新するために、アダプターにデータが変更されたことを知らせる
             mTaskAdapter.notifyDataSetChanged()
+        //}
 
     }
 
@@ -226,7 +196,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
     override fun onResume() {
         super.onResume()
 
-        spinnerItems.clear()
+        //spinnerItems.clear()
 
         //spinnerにカテゴリーをセット
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
