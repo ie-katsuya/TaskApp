@@ -1,22 +1,21 @@
 package com.example.taskapp
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
-import android.support.v7.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
+import android.widget.AdapterView
+import android.widget.Spinner
 import io.realm.Realm
+import io.realm.RealmChangeListener
+import io.realm.Sort
 import kotlinx.android.synthetic.main.content_input.*
 import java.util.*
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Intent
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import io.realm.RealmChangeListener
-import kotlinx.android.synthetic.main.activity_main.*
 
 class InputActivity : AppCompatActivity(){
 
@@ -104,7 +103,7 @@ class InputActivity : AppCompatActivity(){
             }
             //　アイテムが選択されなかった
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                mCategoryId = 0
+
             }
         }
 
@@ -113,30 +112,23 @@ class InputActivity : AppCompatActivity(){
         val taskId = intent.getIntExtra(EXTRA_TASK, -1)
         val realm = Realm.getDefaultInstance()
         mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
+        if (mTask != null) {
+            mTask = realm.copyFromRealm(mTask!!)
+            mCategoryId = mTask!!.category!!.id
+        }
         realm.close()
 
         if (mTask == null) {
             // 新規作成の場合
-            val calendar = Calendar.getInstance()
-            mYear = calendar.get(Calendar.YEAR)
-            mMonth = calendar.get(Calendar.MONTH)
-            mDay = calendar.get(Calendar.DAY_OF_MONTH)
-            mHour = calendar.get(Calendar.HOUR_OF_DAY)
-            mMinute = calendar.get(Calendar.MINUTE)
+            setCalender()
         } else {
             // 更新の場合
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
             selectcategory = mTask!!.category
-            spinner_category.setSelection(mCategoryId)
+            spinner_category.setSelection(mCategoryId - 1)
 
-            val calendar = Calendar.getInstance()
-            calendar.time = mTask!!.date
-            mYear = calendar.get(Calendar.YEAR)
-            mMonth = calendar.get(Calendar.MONTH)
-            mDay = calendar.get(Calendar.DAY_OF_MONTH)
-            mHour = calendar.get(Calendar.HOUR_OF_DAY)
-            mMinute = calendar.get(Calendar.MINUTE)
+            setCalender()
 
             val dateString =
                 mYear.toString() + "/" + String.format("%02d", mMonth + 1) + "/" + String.format("%02d", mDay)
@@ -171,20 +163,17 @@ class InputActivity : AppCompatActivity(){
 
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
-        //val category = category_edit_text.text.toString()
 
         mTask!!.title = title
         mTask!!.contents = content
         mTask!!.category = selectcategory
-        spinner_category.setSelection(mCategoryId)
+        spinner_category.setSelection(mCategoryId-1)
         val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
         val date = calendar.time
         mTask!!.date = date
 
         realm.copyToRealmOrUpdate(mTask!!)
         realm.commitTransaction()
-
-        //realm.close()
 
         val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
         resultIntent.putExtra(EXTRA_TASK, mTask!!.id)
@@ -207,13 +196,13 @@ class InputActivity : AppCompatActivity(){
         mCategoryAdapter = CategoryAdapter(this@InputActivity)
 
         // spinner に adapter をセット
-        // Kotlin Android Extensions
         spinner_category.adapter = spinnerAdapter
         spinnerAdapter.dataList = spinnerItems
 
         //spinnerにカテゴリーをセット
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
-        val categoryRefineResults = mRealm.where(Category::class.java).findAll().sort("id")
+        val categoryRefineResults = mRealm.where(Category::class.java)
+          .findAll().sort("id").filter { category ->  category.id > 0}
 
         // 上記の結果を、spinnerList としてセットする
         mCategoryAdapter.spinnerlist = mRealm.copyFromRealm(categoryRefineResults)
@@ -226,5 +215,17 @@ class InputActivity : AppCompatActivity(){
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
         }
+    }
+
+    private fun setCalender(){
+        val calendar = Calendar.getInstance()
+        if(mTask != null){
+            calendar.time = mTask!!.date
+        }
+        mYear = calendar.get(Calendar.YEAR)
+        mMonth = calendar.get(Calendar.MONTH)
+        mDay = calendar.get(Calendar.DAY_OF_MONTH)
+        mHour = calendar.get(Calendar.HOUR_OF_DAY)
+        mMinute = calendar.get(Calendar.MINUTE)
     }
 }

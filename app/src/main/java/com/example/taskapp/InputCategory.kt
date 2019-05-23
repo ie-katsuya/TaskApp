@@ -1,21 +1,12 @@
 package com.example.taskapp
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.support.v7.widget.Toolbar
-import android.view.View
-import io.realm.Realm
-import kotlinx.android.synthetic.main.content_input.*
-import java.util.*
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Intent
-import io.realm.RealmChangeListener
-import kotlinx.android.synthetic.main.activity_category_id.*
-import kotlinx.android.synthetic.main.activity_main.*
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.Toast
+import io.realm.Realm
+import kotlinx.android.synthetic.main.activity_category_id.*
 
 class InputCategory : AppCompatActivity(), View.OnClickListener {
 
@@ -35,6 +26,8 @@ class InputCategory : AppCompatActivity(), View.OnClickListener {
             Toast.makeText(applicationContext, "カテゴリーを追加しました", Toast.LENGTH_SHORT).show()
             categoryname = category_edit.text.toString()
             addTask()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 

@@ -6,15 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import java.text.SimpleDateFormat
-import java.util.*
-import android.app.PendingIntent
-import android.content.Intent
-import io.realm.Realm
+
 
 class CategoryAdapter(context: Context): BaseAdapter()  {
     private val mLayoutInflater: LayoutInflater
     var spinnerlist = mutableListOf<Category>()
+    lateinit var mCategory: Category
 
     init {
         this.mLayoutInflater = LayoutInflater.from(context)
