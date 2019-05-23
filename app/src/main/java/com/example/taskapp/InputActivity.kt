@@ -13,11 +13,10 @@ import android.widget.AdapterView
 import android.widget.Spinner
 import io.realm.Realm
 import io.realm.RealmChangeListener
-import io.realm.Sort
 import kotlinx.android.synthetic.main.content_input.*
 import java.util.*
 
-class InputActivity : AppCompatActivity(){
+class InputActivity : AppCompatActivity(), View.OnClickListener {
 
     private var mYear = 0
     private var mMonth = 0
@@ -138,6 +137,7 @@ class InputActivity : AppCompatActivity(){
             times_button.text = timeString
         }
 
+        category_button.setOnClickListener(this)
     }
 
     private fun addTask() {
@@ -228,4 +228,10 @@ class InputActivity : AppCompatActivity(){
         mHour = calendar.get(Calendar.HOUR_OF_DAY)
         mMinute = calendar.get(Calendar.MINUTE)
     }
+
+    override fun onClick(v: View) {
+        val intent = Intent(this, InputCategory::class.java)
+        startActivity(intent)
+    }
+
 }

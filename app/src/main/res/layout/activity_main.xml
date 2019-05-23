@@ -22,12 +22,6 @@
             android:layout_alignParentBottom="true"
             android:layout_marginTop="0dp" android:layout_marginBottom="0dp"/>
 
-    <Button
-        android:id="@+id/category_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="カテゴリー作成" android:layout_marginRight="0dp"/>
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

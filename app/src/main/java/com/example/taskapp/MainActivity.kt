@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 const val EXTRA_TASK = "com.example.taskapp.TASK"
 
-class MainActivity : AppCompatActivity(),View.OnClickListener {
+class MainActivity : AppCompatActivity(){
     private lateinit var mRealm: Realm
 
     private val mRealmListener = object : RealmChangeListener<Realm> {
@@ -103,8 +103,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
             true
         }
-
-        category_button.setOnClickListener(this)
     }
 
     private fun reloadListView(select: Int) {
@@ -131,11 +129,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         // 表示を更新するために、アダプターにデータが変更されたことを知らせる
         mTaskAdapter.notifyDataSetChanged()
 
-    }
-
-    override fun onClick(v: View) {
-        val intent = Intent(this, InputCategory::class.java)
-        startActivity(intent)
     }
 
     override fun onResume() {

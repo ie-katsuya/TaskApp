@@ -26,7 +26,7 @@ class InputCategory : AppCompatActivity(), View.OnClickListener {
             Toast.makeText(applicationContext, "カテゴリーを追加しました", Toast.LENGTH_SHORT).show()
             categoryname = category_edit.text.toString()
             addTask()
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, InputActivity::class.java)
             startActivity(intent)
         }
     }

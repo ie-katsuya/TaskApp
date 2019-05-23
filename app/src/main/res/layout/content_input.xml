@@ -46,16 +46,23 @@
             android:id="@+id/done_button"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/spinner_category"
+            android:layout_below="@id/category_button"
             android:layout_alignParentRight="true"
             android:text="保存" />
     <Button
             android:id="@+id/cancell_button"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/spinner_category"
+            android:layout_below="@id/category_button"
             android:layout_alignParentLeft="true"
             android:text="キャンセル" />
+
+    <Button
+            android:id="@+id/category_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/spinner_category"
+            android:text="カテゴリー作成" android:layout_marginRight="0dp"/>
 
     <Spinner
             android:id="@+id/spinner_category"
